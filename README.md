@@ -18,7 +18,12 @@ In addition, you also need to configure the **templates** you want to use.
 You must provide at least a plain-text version for each template. The html versions are optional.
 
 ```js
-//...otherOptions,
+const resolve = require('path').resolve;
+// Note that the paths to the templates are absolute.
+var server = ParseServer({
+...otherOptions,
+// Enable email verification
+verifyUserEmails: true,
 emailAdapter: {
   module: 'parse-server-amazon-ses-email-adapter',
   options: {
