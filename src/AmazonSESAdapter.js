@@ -1,3 +1,4 @@
+require("babel-polyfill");
 import { MailAdapter } from 'parse-server/lib/Adapters/Email/MailAdapter';
 import AmazonSES from 'amazon-ses-mailer';
 import template from 'lodash.template';
