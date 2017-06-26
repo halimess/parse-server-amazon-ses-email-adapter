@@ -114,12 +114,12 @@ class AmazonSESAdapter extends MailAdapter {
         link,
         appName,
         username: user.get('username'),
-        email: user.get('email')
+        email: user.get('email') || user.get('username')
       }, userVars);
 
       message = {
         from: this.fromAddress,
-        to: user.get('email'),
+        to: user.get('email') || user.get('username'),
         subject: templateConfig.subject
       };
     }
