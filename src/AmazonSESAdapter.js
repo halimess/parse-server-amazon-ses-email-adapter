@@ -5,6 +5,7 @@ import template from 'lodash.template';
 import co from 'co';
 import fs from 'fs';
 import path from 'path';
+import juice from 'juice';
 
 /**
  * MailAdapter implementation used by the Parse Server to send
@@ -62,7 +63,7 @@ class AmazonSESAdapter extends MailAdapter {
     const loadEmailTemplate = this.loadEmailTemplate;
     let message = {},
       templateVars = {},
-      pathPlainText, pathHtml;
+      pathPlainText, pathHtml, htmlInliner;
 
     if (options.templateName) {
       const {
@@ -80,6 +81,7 @@ class AmazonSESAdapter extends MailAdapter {
 
       pathPlainText = template.pathPlainText;
       pathHtml = template.pathHtml;
+      htmlInliner = template.htmlInliner;
 
       templateVars = variables;
 
@@ -141,6 +143,9 @@ class AmazonSESAdapter extends MailAdapter {
       // Load html version if available
       if (pathHtml) {
         htmlEmail = yield loadEmailTemplate(pathHtml);
+        if(htmlInliner) {
+          htmlEmail = juice(htmlEmail.toString('utf8'));
+        }
         // Compile html template
         compiled = template(htmlEmail, {
           interpolate: /{{([\s\S]+?)}}/g
