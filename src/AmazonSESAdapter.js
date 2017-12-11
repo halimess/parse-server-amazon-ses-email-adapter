@@ -111,6 +111,7 @@ class AmazonSESAdapter extends MailAdapter {
 
       pathPlainText = templateConfig.pathPlainText;
       pathHtml = templateConfig.pathHtml;
+      htmlInliner = templateConfig.htmlInliner;
 
       templateVars = Object.assign({
         link,
@@ -125,7 +126,6 @@ class AmazonSESAdapter extends MailAdapter {
         subject: templateConfig.subject
       };
     }
-
     return co(function*() {
       let plainTextEmail, htmlEmail, compiled;
 
@@ -143,15 +143,20 @@ class AmazonSESAdapter extends MailAdapter {
       // Load html version if available
       if (pathHtml) {
         htmlEmail = yield loadEmailTemplate(pathHtml);
-        if(htmlInliner) {
-          htmlEmail = juice(htmlEmail.toString('utf8'));
-        }
+        
         // Compile html template
         compiled = template(htmlEmail, {
           interpolate: /{{([\s\S]+?)}}/g
         });
+        
         // Add processed HTML to the message object
-        message.html = compiled(templateVars);
+        let compiledHtml = compiled(templateVars)
+        
+        if(htmlInliner) {
+          compiledHtml = juice(compiledHtml.toString('utf8'));
+        }
+        
+        message.html = compiledHtml;
       }
 
       return {
