@@ -1,6 +1,5 @@
 require("babel-polyfill");
-import { MailAdapter } from 'parse-server/lib/Adapters/Email/MailAdapter';
-import AmazonSES from 'amazon-ses-mailer';
+const AmazonSES = require('../yo-amazon-ses-mailer');
 import template from 'lodash.template';
 import co from 'co';
 import fs from 'fs';
@@ -12,7 +11,24 @@ import juice from 'juice';
  * password reset and email verification emails though AmazonSES
  * @class
  */
-class AmazonSESAdapter extends MailAdapter {
+class MailAdapter {
+  /*
+   * A method for sending mail
+   * @param options would have the parameters
+   * - to: the recipient
+   * - text: the raw text of the message
+   * - subject: the subject of the email
+   */
+  sendMail(options) {}
+
+  /* You can implement those methods if you want
+   * to provide HTML templates etc...
+   */
+  // sendVerificationEmail({ link, appName, user }) {}
+  // sendPasswordResetEmail({ link, appName, user }) {}
+}
+
+class AmazonSESAdapter extends MailAdapter{
   constructor(options = {}) {
     super(options);
 
