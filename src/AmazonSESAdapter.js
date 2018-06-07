@@ -80,6 +80,7 @@ class AmazonSESAdapter extends MailAdapter{
     let message = {},
       templateVars = {},
       pathPlainText, pathHtml, htmlInliner;
+    var configurationSetName; // function scope;
 
     if (options.templateName) {
       const {
@@ -89,6 +90,7 @@ class AmazonSESAdapter extends MailAdapter{
         recipient,
         variables
       } = options;
+      configurationSetName = options.configurationSetName;
       let template = this.templates[templateName];
 
       if (!template) throw new Error(`Could not find template with name ${templateName}`);
@@ -117,6 +119,7 @@ class AmazonSESAdapter extends MailAdapter{
         callback
       } = templateConfig;
       let userVars;
+      configurationSetName = templateConfig.configurationSetName;
 
       if (callback && typeof callback === 'function') {
         userVars = callback(user);
@@ -183,6 +186,7 @@ class AmazonSESAdapter extends MailAdapter{
           text: message.text,
           html: message.html,
         },
+        ConfigurationSetName: configurationSetName
       };
 
     }).then(payload => {
@@ -243,13 +247,14 @@ class AmazonSESAdapter extends MailAdapter{
    *   placeholders
    * @returns {promise}
    */
-  send({templateName, subject, fromAddress, recipient, variables = {}}) {
+  send({templateName, subject, fromAddress, recipient, variables = {}, configurationSetName}) {
     return this._sendMail({
       templateName,
       subject,
       fromAddress,
       recipient,
-      variables
+      variables,
+      configurationSetName
     });
   }
 

@@ -41,7 +41,7 @@ var AmazonSES = (function() {
       , 'Source': opts.from
       , 'Message.Subject.Data' : opts.subject
     };
-    if (opt.ConfigurationSetName) {
+    if (opts.ConfigurationSetName) {
       params['ConfigurationSetName'] = opts.ConfigurationSetName;
     }
     if (opts.body.text) {
