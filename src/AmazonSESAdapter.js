@@ -1,6 +1,6 @@
 require("babel-polyfill");
 import { MailAdapter } from 'parse-server/lib/Adapters/Email/MailAdapter';
-import AmazonSES from 'amazon-ses-mailer';
+import { Credentials, SESV2 } from 'aws-sdk';
 import template from 'lodash.template';
 import co from 'co';
 import fs from 'fs';
@@ -42,7 +42,7 @@ class AmazonSESAdapter extends MailAdapter {
         throw new Error('AmazonSESAdapter template callback is not a function.');
     });
 
-    this.ses = new AmazonSES(accessKeyId, secretAccessKey, region);
+    this.ses = new SESV2({ credentials: new Credentials({ accessKeyId, secretAccessKey }), region });
     this.fromAddress = fromAddress;
     this.templates = templates;
 
@@ -160,18 +160,32 @@ class AmazonSESAdapter extends MailAdapter {
       }
 
       return {
-        from: message.from,
-        to: [message.to],
-        subject: message.subject,
-        body: {
-          text: message.text,
-          html: message.html,
+        Content: {
+          Simple: {
+            Body: {
+              Html: {
+                Data: message.html,
+              },
+              Text: {
+                Data: message.text,
+              }
+            },
+            Subject: {
+              Data: message.subject,
+            },
+          },
         },
+        Destination: {
+          ToAddresses: [
+            message.to,
+          ]
+        },
+        FromEmailAddress: message.from,
       };
 
     }).then(payload => {
       return new Promise((resolve, reject) => {
-        this.ses.send(payload, (error, data) => {
+        this.ses.sendEmail(payload, (error, data) => {
           if (error) reject(error);
           resolve(data);
         });

@@ -3,7 +3,7 @@ Used to send Parse Server emails with Amazon SES.
 (based on [`parse-server-mailgun`](https://github.com/sebsylvester/parse-server-mailgun))
 
 ## AmazonSES node module
-[`amazon-ses-mailer`](https://github.com/antoinerousseau/node-amazon-ses)
+[`aws-sdk SESV2`](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SESV2.html)
 
 
 ## Install
